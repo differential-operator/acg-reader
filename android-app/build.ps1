@@ -27,9 +27,9 @@ try {
     keytool -genkeypair -keystore .signing/release.p12 -storetype PKCS12 -storepass:env ACGR_KEYPASS -keypass:env ACGR_KEYPASS -alias acgreader -keyalg RSA -keysize 3072 -validity 10000 -dname 'CN=Acg Reader, O=Acg Reader' -noprompt
     if ($LASTEXITCODE -ne 0) { throw 'Signing key creation failed' }
   }
-  & "$tools/apksigner.bat" sign --ks .signing/release.p12 --ks-key-alias acgreader --ks-pass env:ACGR_KEYPASS --key-pass env:ACGR_KEYPASS --out output/AcgReader-1.0.3.apk build/aligned.apk
+  & "$tools/apksigner.bat" sign --ks .signing/release.p12 --ks-key-alias acgreader --ks-pass env:ACGR_KEYPASS --key-pass env:ACGR_KEYPASS --out output/AcgReader-1.0.4.apk build/aligned.apk
   if ($LASTEXITCODE -ne 0) { throw 'APK signing failed' }
-  & "$tools/apksigner.bat" verify --verbose output/AcgReader-1.0.3.apk
+  & "$tools/apksigner.bat" verify --verbose output/AcgReader-1.0.4.apk
   if ($LASTEXITCODE -ne 0) { throw 'APK signature verification failed' }
 } finally { Remove-Item Env:ACGR_KEYPASS -ErrorAction SilentlyContinue }
 

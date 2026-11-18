@@ -1,0 +1,14 @@
+package com.acgreader.mobile;
+import java.io.*;import java.nio.file.*;import java.security.*;import java.util.*;import java.util.concurrent.*;
+final class MediaCache {
+ final File folder;final LocalGateway gateway;final ConcurrentHashMap<String,Task> pending=new ConcurrentHashMap<>();final ThreadPoolExecutor pool=new ThreadPoolExecutor(2,2,0,TimeUnit.SECONDS,new PriorityBlockingQueue<Runnable>());
+ static long sequence=0;
+ final class Task extends FutureTask<File> implements Comparable<Task>{volatile int priority;final long order;Task(Callable<File> c,boolean urgent){super(c);priority=urgent?0:1;synchronized(MediaCache.class){order=sequence++;}}public int compareTo(Task t){int c=Integer.compare(priority,t.priority);return c!=0?c:Long.compare(order,t.order);}}
+ MediaCache(File f,LocalGateway g){folder=new File(f,"media-originals");folder.mkdirs();gateway=g;}
+ File get(String url,boolean urgent)throws Exception{if(!gateway.allowed(new java.net.URL(url),false))throw new IOException("不支持的图片来源");StringBuilder hex=new StringBuilder();for(byte b:MessageDigest.getInstance("SHA-256").digest(url.getBytes("UTF-8")))hex.append(String.format("%02x",b));final File dest=new File(folder,hex.toString());if(dest.isFile()){dest.setLastModified(System.currentTimeMillis());return dest;}
+ Task created=new Task(()->{File part=new File(dest+".part");try{for(int attempt=0;;attempt++){try(InputStream in=gateway.remote(url,false);OutputStream out=new FileOutputStream(part)){AlbumSaver.copy(in,out);break;}catch(Exception e){if(e instanceof LocalGateway.HttpFailure&&((LocalGateway.HttpFailure)e).status==429&&attempt<4){Thread.sleep(((LocalGateway.HttpFailure)e).retryAfterMs);}else if(attempt<2&&!(e instanceof LocalGateway.HttpFailure)){Thread.sleep(2000L*(attempt+1));}else throw e;}}if(part.length()==0)throw new IOException("图片为空");if(!part.renameTo(dest))throw new IOException("图片缓存写入失败");trim();return dest;}finally{part.delete();}},urgent);
+ Task task=pending.putIfAbsent(url,created);if(task==null){task=created;pool.execute(task);}else if(urgent&&pool.getQueue().remove(task)){task.priority=0;pool.execute(task);}try{return task.get();}catch(ExecutionException e){Throwable cause=e.getCause();if(cause instanceof Exception)throw (Exception)cause;throw new IOException(cause);}finally{if(task.isDone())pending.remove(url,task);}}
+ void trim(){File[] files=folder.listFiles((d,n)->!n.endsWith(".part"));if(files==null)return;long total=0;for(File f:files)total+=f.length();Arrays.sort(files,Comparator.comparingLong(File::lastModified));for(File f:files){if(total<=256L*1024*1024)break;long size=f.length();if(f.delete())total-=size;}}
+ void cancelPending(){for(Task t:pending.values())t.cancel(true);pending.clear();pool.getQueue().clear();}
+ void close(){cancelPending();pool.shutdownNow();}
+}

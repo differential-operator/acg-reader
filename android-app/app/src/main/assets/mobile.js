@@ -18,4 +18,5 @@ if(errors.length)await writeNative('保存失败记录.json','application/json',
 }catch(e){if(g===generation)$('message').textContent='保存失败：'+e.message}finally{if(g===generation){saving=false;controller=null;updateButton()}}};
 function choose(exportOnly){if(saving||!job||(!exportOnly&&job.status!=='complete'))return;saving=true;updateButton();token=String(Date.now());pending={collection:structuredClone(job),generation,exportOnly};AcgAndroid.selectDirectory(token)}
 saveMedia=()=>choose(false);$('export').onclick=()=>choose(true);
+const restored=typeof restoreWebTask==='function'?restoreWebTask():null;if(restored){job=restored;$('url').value=job.base+'.html';offset=restored.view?.offset||0;if(restored.view?.mode)$('mode').value=restored.view.mode;render(true);if(restored.view?.previewUrl&&job.media.some(m=>m.url===restored.view.previewUrl))openPreview(restored.view.previewUrl)}
 })()

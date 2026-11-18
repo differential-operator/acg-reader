@@ -1,0 +1,8 @@
+package com.acgreader.mobile;
+import java.io.*;
+final class ImageFormatInfo {
+ final String mime;final int frames;
+ ImageFormatInfo(String m,int f){mime=m;frames=f;}
+ static ImageFormatInfo inspect(File file)throws IOException{try(RandomAccessFile r=new RandomAccessFile(file,"r")){if(r.length()<12)return new ImageFormatInfo("",1);byte[] header=new byte[12];r.readFully(header);String h=new String(header,"US-ASCII");if(h.startsWith("GIF87a")||h.startsWith("GIF89a")){r.seek(10);int packed=r.readUnsignedByte();r.skipBytes(2);if((packed&128)!=0)r.skipBytes(3*(1<<((packed&7)+1)));int frames=0;while(true){int block=r.read();if(block==0x3b)break;if(block==0x21){r.readUnsignedByte();skip(r);}else if(block==0x2c){r.skipBytes(8);int local=r.readUnsignedByte();if((local&128)!=0)r.skipBytes(3*(1<<((local&7)+1)));r.readUnsignedByte();skip(r);frames++;}else throw new IOException("GIF 文件不完整");}return new ImageFormatInfo("image/gif",frames);}if(h.startsWith("RIFF")&&h.substring(8).equals("WEBP")){int frames=0;while(r.getFilePointer()+8<=r.length()){byte[] id=new byte[4];r.readFully(id);long size=Integer.toUnsignedLong(Integer.reverseBytes(r.readInt()));if(new String(id,"US-ASCII").equals("ANMF"))frames++;long next=r.getFilePointer()+size+(size&1);if(next>r.length())throw new IOException("WebP 文件不完整");r.seek(next);}return new ImageFormatInfo("image/webp",Math.max(1,frames));}return new ImageFormatInfo("",1);}}
+ static void skip(RandomAccessFile r)throws IOException{int n;while((n=r.readUnsignedByte())>0){if(r.getFilePointer()+n>r.length())throw new IOException("动图数据不完整");r.seek(r.getFilePointer()+n);}}
+}
