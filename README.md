@@ -2,7 +2,7 @@
 
 输入 ACG 漫画网作品的任意分页链接，即可整理整部作品的图片和视频，支持预览与保存。提供 Windows 和 Android 版本，提取素材需要联网。
 
-ACG漫画网（https://www.acgmhaa.com/）
+ACG漫画网https://www.acgmhaa.com/
 
 ![ACG Reader 桌面界面](docs/images/desktop.png)
 
