@@ -1,0 +1,12 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "buildCommand": "node scripts/build.mjs",
+  "outputDirectory": "assets",
+  "functions": {"api/gateway.mjs": {"maxDuration": 60}},
+  "rewrites": [
+    {"source": "/api/page", "destination": "/api/gateway?operation=page"},
+    {"source": "/api/media", "destination": "/api/gateway?operation=media"},
+    {"source": "/api/hls", "destination": "/api/gateway?operation=hls"}
+  ]
+}

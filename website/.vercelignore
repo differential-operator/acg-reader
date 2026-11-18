@@ -1,0 +1,6 @@
+.sites-runtime
+.git
+.openai
+outputs
+node_modules
+.env*
