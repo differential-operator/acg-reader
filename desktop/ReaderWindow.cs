@@ -18,7 +18,7 @@ public class ReaderWindow : Form
     readonly string dataRoot = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "AcgReader");
     public ReaderWindow()
     {
-        Text = "Acg连页"; Width = 1900; Height = 1300; MinimumSize = new Size(760, 560);
+        Text = "ACG Reader"; Width = 1900; Height = 1300; MinimumSize = new Size(760, 560);
         StartPosition = FormStartPosition.CenterScreen;
         Icon = Icon.ExtractAssociatedIcon(Environment.ProcessPath!);
         BackColor = Color.FromArgb(17,20,18); Controls.Add(view);

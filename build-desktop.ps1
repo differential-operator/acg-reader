@@ -6,4 +6,4 @@ if ($LASTEXITCODE -ne 0) { throw 'Backend build failed' }
 dotnet publish desktop/AcgReader.csproj -c Release -r win-x64 --self-contained true -o release
 if ($LASTEXITCODE -ne 0) { throw 'Desktop build failed' }
 Copy-Item -LiteralPath THIRD-PARTY.md,hls-LICENSE.txt,ffmpeg-GPLv3.txt -Destination release
-Write-Host 'Built release/Acg连页.exe'
+Write-Host 'Built release/ACG Reader.exe'

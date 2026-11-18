@@ -24,3 +24,8 @@ uninstaller-test.log
 MicrosoftEdgeWebview2Setup.exe
 
 *.csproj.user
+android-app/tools/
+android-app/build/
+android-app/output/
+android-app/.signing/
+mux.tgz

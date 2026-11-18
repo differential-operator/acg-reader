@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <Version>1.0.1</Version>
-    <AssemblyName>Acg连页</AssemblyName>
+    <Version>1.0.2</Version>
+    <AssemblyName>ACG Reader</AssemblyName>
     <ApplicationIcon>../favicon.ico</ApplicationIcon>
     <PublishSingleFile>true</PublishSingleFile>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
